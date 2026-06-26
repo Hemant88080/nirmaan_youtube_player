@@ -1,0 +1,14 @@
+# Flutter app runner folders - not needed by package users
+android/
+ios/
+linux/
+macos/
+web/
+windows/
+
+# Demo app currently inside lib; move it to example/ later
+lib/main.dart
+
+# Generated/local files
+build/
+pubspec.lock
