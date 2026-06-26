@@ -1,51 +1,58 @@
 # nirmaan_youtube_player
 
-A cross-platform YouTube + offline video player package for Flutter.
+[![pub package](https://img.shields.io/pub/v/nirmaan_youtube_player.svg)](https://pub.dev/packages/nirmaan_youtube_player)
+[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
+[![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20macOS%20%7C%20Windows%20%7C%20Web-4CAF50.svg)](#platform-support)
 
-**Platforms:** Android · iOS · macOS · Windows · Web
+A Flutter package for presenting YouTube embeds and locally stored video in a consistent, branded player experience across Android, iOS, macOS, Windows, and web.
 
-**Features:**
-- YouTube IFrame player via `InAppWebView` (Android · iOS · macOS · Windows) or `<iframe>` (Web)
-- Local HTTP server for DRM-free offline MP4 playback with full Range-header seeking support
-- `NirmaanDownloadService` — download, cancel, delete, and list offline videos
-- Custom glassmorphism player UI (pure HTML/JS) — brand text, watermark, swappable icons
-- Fullscreen: native Flutter rotation (mobile) · `fullscreen_window` (Windows) · Browser API (Web)
-- Double-tap seek, variable speed, mute, progress bar, keyboard shortcuts
-- Seamless online ↔ offline switch via a single `localVideoPath` parameter
-- `GetStorage` persistence for offline lecture metadata (no Hive, no code-gen)
+> **Use responsibly:** Only play or download video that you own or are explicitly authorised to use. This package does not grant rights to access, download, redistribute, or bypass restrictions for third-party content.
 
----
+## Highlights
 
-## Table of contents
+- One player API for Android, iOS, macOS, Windows, and web.
+- YouTube IFrame playback with custom HTML-based controls.
+- Local MP4 playback on Android, iOS, macOS, and Windows.
+- Offline video manager for starting, cancelling, listing, and removing saved videos.
+- Playback controls for play, pause, seek, mute, speed, fullscreen, and progress.
+- `ValueNotifier`-based controller — no GetX knowledge is required in the host app.
+- Customisable offline-player icons and HTML player appearance.
+- Offline download metadata persisted with `GetStorage`.
 
-1. [Installation](#installation)
-2. [Required platform setup](#required-platform-setup) ← **read this before running**
-3. [Dart initialisation](#dart-initialisation)
-4. [Playing a YouTube video](#playing-a-youtube-video)
-5. [Downloading for offline](#downloading-for-offline)
-6. [Offline playback](#offline-playback)
-7. [Programmatic control](#programmatic-control)
-8. [Customising the player UI](#customising-the-player-ui)
-9. [API reference](#api-reference)
-10. [Migration from custom_library/](#migration-from-custom_library)
-11. [Publishing to GitHub](#publishing-to-github)
+## Platform support
 
----
+| Capability | Android | iOS | macOS | Windows | Web |
+|---|:---:|:---:|:---:|:---:|:---:|
+| YouTube playback | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Local MP4 playback | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Offline download management | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Native / browser fullscreen | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Controller commands | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ## Installation
 
-### From GitHub (recommended while private)
+### From pub.dev
+
+Use this after the package has been published:
 
 ```yaml
-# pubspec.yaml in your app
+dependencies:
+  nirmaan_youtube_player: ^1.0.0
+```
+
+### From GitHub
+
+Use this while testing a branch or before a pub.dev release:
+
+```yaml
 dependencies:
   nirmaan_youtube_player:
     git:
-      url: https://github.com/your-username/nirmaan_youtube_player.git
-      ref: main        # or a release tag like v1.0.0
+      url: https://github.com/Hemant88080/nirmaan_youtube_player.git
+      ref: main
 ```
 
-### Local path (during development)
+### From a local path
 
 ```yaml
 dependencies:
@@ -53,233 +60,42 @@ dependencies:
     path: ../nirmaan_youtube_player
 ```
 
-Then run:
+Then fetch packages:
+
 ```bash
 flutter pub get
 ```
 
----
+## Quick start
 
-## Required platform setup
+### 1. Initialise once
 
-> **These steps are mandatory. Skipping any of them will break the player or downloads on that platform.**
-
----
-
-### Android
-
-#### 1. `android/app/src/main/AndroidManifest.xml`
-
-Add the INTERNET permission and reference the network security config **inside `<manifest>`** before `<application>`:
-
-```xml
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- REQUIRED: allows all network access (WebView + download) -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-
-    <application
-        android:label="your_app"
-        android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
-        android:networkSecurityConfig="@xml/network_security_config"
-        android:usesCleartextTraffic="true">
-
-        <!-- rest of your application block -->
-    </application>
-
-</manifest>
-```
-
-> `android:usesCleartextTraffic="true"` is required so the Android WebView can connect to
-> the local HTTP server on `127.0.0.1` that serves the player HTML and offline video.
-
-#### 2. Create `android/app/src/main/res/xml/network_security_config.xml`
-
-Create the `xml/` folder if it does not exist, then create the file:
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<network-security-config>
-    <!-- Allow cleartext HTTP to the local video server (127.0.0.1 / localhost) -->
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">127.0.0.1</domain>
-        <domain includeSubdomains="false">localhost</domain>
-    </domain-config>
-</network-security-config>
-```
-
-> Android API 28+ blocks all cleartext HTTP by default.
-> This exception is scoped only to localhost — all external connections remain HTTPS-only.
-
-#### 3. Minimum SDK
-
-`flutter_inappwebview` requires **minSdkVersion 19** (API 19 / Android 4.4) or higher.
-Check your `android/app/build.gradle.kts`:
-
-```kotlin
-defaultConfig {
-    minSdk = 19   // or higher
-}
-```
-
----
-
-### iOS
-
-#### `ios/Runner/Info.plist`
-
-Add these two keys anywhere inside the root `<dict>`:
-
-```xml
-<!-- Allow the WebView to load from the local HTTP server on 127.0.0.1 -->
-<key>NSAppTransportSecurity</key>
-<dict>
-    <key>NSAllowsLocalNetworking</key>
-    <true/>
-</dict>
-
-<!-- Required by flutter_inappwebview to render WebViews inline -->
-<key>io.flutter.embedded_views_preview</key>
-<true/>
-```
-
-> `NSAllowsLocalNetworking` permits HTTP only to `.local` hostnames and loopback
-> addresses (127.0.0.1). All other external traffic continues to require HTTPS.
-
-**Minimum deployment target:** iOS 12.0+  
-Set in Xcode → Runner target → General → Minimum Deployments.
-
----
-
-### macOS
-
-macOS uses the App Sandbox, which blocks **all** outbound connections by default.
-Two files must be updated.
-
-#### 1. `macos/Runner/DebugProfile.entitlements`
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>com.apple.security.app-sandbox</key>
-    <true/>
-    <key>com.apple.security.cs.allow-jit</key>
-    <true/>
-    <!-- Bind the local HTTP server -->
-    <key>com.apple.security.network.server</key>
-    <true/>
-    <!-- Allow outbound connections: YouTube API, CDN, download -->
-    <key>com.apple.security.network.client</key>
-    <true/>
-</dict>
-</plist>
-```
-
-#### 2. `macos/Runner/Release.entitlements`
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>com.apple.security.app-sandbox</key>
-    <true/>
-    <!-- Bind the local HTTP server -->
-    <key>com.apple.security.network.server</key>
-    <true/>
-    <!-- Allow outbound connections: YouTube API, CDN, download -->
-    <key>com.apple.security.network.client</key>
-    <true/>
-</dict>
-</plist>
-```
-
-> Without `network.client` the macOS sandbox blocks the WKWebView from reaching
-> `youtube.com` to load the IFrame API, and also blocks `youtube_explode_dart` and
-> Dio from making any download requests.
-
-#### 3. `macos/Runner/Info.plist`
-
-Add inside the root `<dict>`:
-
-```xml
-<!-- Allow the WebView to load from the local HTTP server on 127.0.0.1 -->
-<key>NSAppTransportSecurity</key>
-<dict>
-    <key>NSAllowsLocalNetworking</key>
-    <true/>
-</dict>
-```
-
-**Minimum deployment target:** macOS 10.14+  
-Set in Xcode → Runner target → General → Minimum Deployments.
-
----
-
-### Windows
-
-No special system configuration is required.
-
-**WebView2 Runtime** must be installed on the user's machine.
-- Windows 11 and up-to-date Windows 10 include WebView2 by default.
-- For older Windows 10 setups, users need to install the
-  [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/).
-
-`flutter_inappwebview` on Windows uses WebView2 (Microsoft Edge Chromium engine).
-YouTube's IFrame API works in WebView2 without additional configuration.
-
----
-
-### Web
-
-No extra configuration required. The Web player uses an `<iframe>` with `srcdoc`
-and communicates via `window.postMessage`. Offline download is **not** supported
-on Web (no file system access).
-
----
-
-## Dart initialisation
-
-Call `NirmaanYoutubePlayer.initialize()` **once** in `main()`, before `runApp`.
-It initialises GetStorage and registers the download service internally.
-You do not need to import or use GetX in your own code.
+Call `NirmaanYoutubePlayer.initialize()` before `runApp()`. It prepares local storage and the offline download service.
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:nirmaan_youtube_player/nirmaan_youtube_player.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // One line — sets up GetStorage + NirmaanDownloadService internally.
-  // No GetX knowledge required in your app code.
   await NirmaanYoutubePlayer.initialize();
 
   runApp(const MyApp());
 }
 ```
 
----
-
-## Playing a YouTube video
+### 2. Display a video
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:nirmaan_youtube_player/nirmaan_youtube_player.dart';
-
-class MyPlayerScreen extends StatefulWidget {
-  final String youtubeUrl;
-  const MyPlayerScreen({super.key, required this.youtubeUrl});
+class LessonPlayer extends StatefulWidget {
+  const LessonPlayer({super.key});
 
   @override
-  State<MyPlayerScreen> createState() => _MyPlayerScreenState();
+  State<LessonPlayer> createState() => _LessonPlayerState();
 }
 
-class _MyPlayerScreenState extends State<MyPlayerScreen> {
-  final _controller = NirmaanYoutubeController();
+class _LessonPlayerState extends State<LessonPlayer> {
+  final NirmaanYoutubeController _controller = NirmaanYoutubeController();
 
   @override
   void dispose() {
@@ -289,17 +105,12 @@ class _MyPlayerScreenState extends State<MyPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: buildPlatformYoutubePlayer(
-          url: widget.youtubeUrl,         // any youtube.com or youtu.be URL
-          controller: _controller,
-          autoPlay: true,
-          onFullscreenChanged: (isFull) {
-            // called when the user taps the fullscreen button
-          },
-        ),
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: buildPlatformYoutubePlayer(
+        url: 'https://www.youtube.com/watch?v=YOUR_VIDEO_ID',
+        controller: _controller,
+        autoPlay: false,
       ),
     );
   }
@@ -307,318 +118,318 @@ class _MyPlayerScreenState extends State<MyPlayerScreen> {
 ```
 
 Supported URL formats:
-- `https://www.youtube.com/watch?v=VIDEO_ID`
-- `https://youtu.be/VIDEO_ID`
-- `https://www.youtube.com/embed/VIDEO_ID`
-- `https://www.youtube.com/shorts/VIDEO_ID`
 
----
+```text
+https://www.youtube.com/watch?v=VIDEO_ID
+https://youtu.be/VIDEO_ID
+https://www.youtube.com/embed/VIDEO_ID
+https://www.youtube.com/shorts/VIDEO_ID
+```
 
-## Downloading for offline
+## Complete example application
 
-Access the download service through `NirmaanYoutubePlayer.downloadService` after
-`initialize()` has been called, or directly via `NirmaanDownloadService.I`.
+A ready-to-add example app is available in [`example/lib/main.dart`](example/lib/main.dart).
+
+The example demonstrates:
+
+1. package initialisation;
+2. online YouTube playback;
+3. play, pause, mute, seek, and playback-speed controls;
+4. downloading an authorised video for offline use;
+5. switching automatically between online and local playback.
+
+To run the example locally:
+
+```bash
+cd example
+flutter create .
+flutter pub get
+flutter run
+```
+
+After Flutter creates the platform folders, apply the platform configuration below.
+
+## Offline workflow
+
+### Download an authorised video
+
+`NirmaanDownloadService` returns the local MP4 path when a download completes. The path can be stored in your own lesson model or passed directly to the player.
 
 ```dart
-final svc = NirmaanYoutubePlayer.downloadService;
+final service = NirmaanYoutubePlayer.downloadService;
 
-// Start a download
-await svc.downloadYoutubeVideo(
-  youtubeUrl:   'https://youtu.be/VIDEO_ID',
-  lectureId:    '42',          // string identifier
-  lectureIdInt: 42,            // integer identifier (same value)
-  courseId:     7,             // 0 is fine if you have no course concept
-  title:        'Lecture 1 — Introduction',
-  courseTitle:  'My Course',
-  thumbnailUrl: 'https://img.youtube.com/vi/VIDEO_ID/hqdefault.jpg',
-  duration:     '15:30',       // display string, not parsed
-  onProgress:   (p) => print('${(p * 100).toInt()}%'),
+final localPath = await service.downloadYoutubeVideo(
+  youtubeUrl: 'https://www.youtube.com/watch?v=YOUR_VIDEO_ID',
+  lectureId: 'lesson-42',
+  lectureIdInt: 42,
+  courseId: 7,
+  title: 'Introduction',
+  courseTitle: 'Flutter Foundations',
+  thumbnailUrl: 'https://example.com/lesson-42-thumbnail.jpg',
+  duration: '15:30',
+  onProgress: (progress) {
+    debugPrint('Download: ${(progress * 100).toStringAsFixed(0)}%');
+  },
 );
 
-// Track progress reactively (use in a StatefulWidget with StreamSubscription)
-svc.downloadProgress.stream.listen((map) {
-  final progress = svc.progressFor('42'); // 0.0 – 1.0
-});
-svc.downloading.stream.listen((_) {
-  final active = svc.isDownloading('42');
-});
-
-// Check if a video is already downloaded
-final bool ready = svc.hasDownloadedSync('42');
-final String? path = await svc.getLocalPath('42');
-
-// Cancel an in-progress download
-svc.cancelDownload('42');
-
-// Delete a downloaded video
-await svc.deleteDownload('42');
-
-// Delete every downloaded video
-await svc.deleteAllDownloads();
-
-// List all downloads
-final List<OfflineLecture> all = await svc.getAllDownloads();
+if (localPath != null) {
+  debugPrint('Saved to: $localPath');
+}
 ```
 
-> Downloads are saved to `getApplicationDocumentsDirectory()` — no storage
-> permission is required on Android or iOS for this path.
+### Play a saved video
 
----
-
-## Offline playback
-
-Pass the local file path returned by `getLocalPath()` to `buildPlatformYoutubePlayer`.
-When `localVideoPath` is non-null the player automatically switches to an HTML5
-`<video>` element served through the local HTTP server instead of the YouTube IFrame.
-Removing the path (setting it back to `null`) switches back to online mode.
+Pass the returned local path to `localVideoPath`. When a non-null path is supplied, the package uses its local HTML5 player instead of the online YouTube player.
 
 ```dart
-final String? localPath = await svc.getLocalPath('42');
-
 buildPlatformYoutubePlayer(
-  url: 'https://youtu.be/VIDEO_ID',   // still required (used in online mode)
+  url: 'https://www.youtube.com/watch?v=YOUR_VIDEO_ID',
   controller: _controller,
   autoPlay: true,
-  localVideoPath: localPath,           // null → online   non-null → offline
-)
+  localVideoPath: localPath,
+);
 ```
 
-> The player reloads automatically when `localVideoPath` changes,
-> so you can download and switch without rebuilding the entire screen.
+### Manage saved videos
 
----
+```dart
+final service = NirmaanYoutubePlayer.downloadService;
 
-## Programmatic control
+final isDownloaded = service.hasDownloadedSync('lesson-42');
+final savedPath = await service.getLocalPath('lesson-42');
 
-`NirmaanYoutubeController` is a plain `ValueNotifier<NirmaanYoutubeValue>`.
-It works with both online YouTube and offline HTML5 playback.
+service.cancelDownload('lesson-42');
+await service.deleteDownload('lesson-42');
+
+final downloads = await service.getAllDownloads();
+```
+
+> Downloads are stored in the application documents directory. The exact file location is platform-dependent and should be treated as app-managed storage.
+
+## Player controls
 
 ```dart
 final controller = NirmaanYoutubeController();
 
-// Commands
 await controller.play();
 await controller.pause();
 await controller.togglePlayPause();
+
 await controller.mute();
 await controller.unMute();
 await controller.toggleMute();
+
 await controller.seekTo(const Duration(seconds: 90));
-await controller.seekForward10();   // +10 s
-await controller.seekBackward10();  // -10 s
+await controller.seekForward10();
+await controller.seekBackward10();
 await controller.setPlaybackRate(1.5);
+```
 
-// Read current state
-final NirmaanYoutubeValue v = controller.value;
-print(v.isPlaying);      // bool
-print(v.isMuted);        // bool
-print(v.isReady);        // bool
-print(v.position);       // Duration
-print(v.duration);       // Duration
-print(v.playbackRate);   // double
+Listen for player state changes with `ValueListenableBuilder`:
 
-// React to state changes in a widget
+```dart
 ValueListenableBuilder<NirmaanYoutubeValue>(
   valueListenable: controller,
-  builder: (context, value, _) {
-    return Text(value.isPlaying ? 'Playing' : 'Paused');
+  builder: (context, value, child) {
+    final label = value.isPlaying ? 'Playing' : 'Paused';
+    return Text('$label • ${value.position.inSeconds}s');
   },
 )
 ```
 
----
+## Platform configuration
 
-## Customising the player UI
+The package uses a local loopback HTTP server on native platforms to serve the player page and local MP4 content. Complete the relevant setup once in the host application.
 
-### Brand and watermark
+### Android
+
+Add internet access and permit the app to load content from the local server.
+
+**`android/app/src/main/AndroidManifest.xml`**
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:name="${applicationName}"
+        android:label="your_app"
+        android:icon="@mipmap/ic_launcher"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="true">
+        <!-- existing application configuration -->
+    </application>
+</manifest>
+```
+
+**`android/app/src/main/res/xml/network_security_config.xml`**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+</network-security-config>
+```
+
+Use an Android `minSdk` of **19 or higher**.
+
+### iOS
+
+Add the following inside the root `<dict>` of **`ios/Runner/Info.plist`**:
+
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsLocalNetworking</key>
+    <true/>
+</dict>
+
+<key>io.flutter.embedded_views_preview</key>
+<true/>
+```
+
+Use an iOS deployment target of **12.0 or higher**.
+
+### macOS
+
+Add local-network access in both **`macos/Runner/DebugProfile.entitlements`** and **`macos/Runner/Release.entitlements`**:
+
+```xml
+<key>com.apple.security.app-sandbox</key>
+<true/>
+<key>com.apple.security.network.server</key>
+<true/>
+<key>com.apple.security.network.client</key>
+<true/>
+```
+
+Also add this inside the root `<dict>` in **`macos/Runner/Info.plist`**:
+
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsLocalNetworking</key>
+    <true/>
+</dict>
+```
+
+Use a macOS deployment target of **10.14 or higher**.
+
+### Windows
+
+No code configuration is required. The machine running the app must have the Microsoft Edge **WebView2 Runtime** available.
+
+### Web
+
+No extra configuration is needed for online playback. Local-file playback and download management are not supported in browsers.
+
+## Customisation
+
+### Offline-player icons
+
+Replace any of the offline control icons using inline SVG or an image URL:
 
 ```dart
-// The brand text shown in the top-left pill defaults to 'Nirmaan Academy'.
-// Pass topLeftSlotHtml or configure NirmaanYoutubeHtmlConfig directly
-// if you are building the HTML yourself via buildNirmaanYoutubeHtml().
+buildPlatformYoutubePlayer(
+  url: 'https://www.youtube.com/watch?v=YOUR_VIDEO_ID',
+  controller: _controller,
+  autoPlay: false,
+  offlineIcons: NirmaanPlayerIcons(
+    play: NirmaanPlayerIcon.svg('<svg viewBox="0 0 24 24">...</svg>'),
+    pause: NirmaanPlayerIcon.svg('<svg viewBox="0 0 24 24">...</svg>'),
+    fullscreen: NirmaanPlayerIcon.image(
+      'https://example.com/icons/fullscreen.png',
+    ),
+  ),
+);
+```
 
-buildNirmaanYoutubeHtml(
+### Advanced HTML configuration
+
+For full control over the HTML player output, use `NirmaanYoutubeHtmlConfig` with `buildNirmaanYoutubeHtml()`:
+
+```dart
+final html = buildNirmaanYoutubeHtml(
   NirmaanYoutubeHtmlConfig(
-    videoId:      'VIDEO_ID',
-    autoPlay:     true,
-    sourceName:   'my-app',
-    bridgeType:   NirmaanYoutubeBridgeType.inAppWebView,
+    videoId: 'YOUR_VIDEO_ID',
+    autoPlay: false,
+    sourceName: 'my-app',
+    bridgeType: NirmaanYoutubeBridgeType.inAppWebView,
     fullscreenType: NirmaanYoutubeFullscreenType.nativeFlutter,
-    brandText:    'My Academy',
-    courseTitle:  'Course Name',
+    brandText: 'My Academy',
+    courseTitle: 'Flutter Foundations',
     showWatermark: true,
-    watermarkText: 'CONFIDENTIAL',
-    accentColor:  '#FF6B6B',
+    watermarkText: 'INTERNAL USE',
+    accentColor: '#FF6B6B',
     borderRadius: 12,
   ),
 );
 ```
 
-### Swappable icons
+## Public API
 
-Both the online and offline players support custom icons via `NirmaanPlayerIcons`.
-Each slot accepts either an inline SVG string or an image URL:
-
-```dart
-buildPlatformYoutubePlayer(
-  url: 'https://youtu.be/VIDEO_ID',
-  controller: _controller,
-  autoPlay: true,
-  offlineIcons: NirmaanPlayerIcons(
-    play:           NirmaanPlayerIcon.svg('<svg viewBox="0 0 24 24">...</svg>'),
-    pause:          NirmaanPlayerIcon.image('https://cdn.example.com/pause.png'),
-    rewind:         NirmaanPlayerIcon.svg('<svg>...</svg>'),
-    forward:        NirmaanPlayerIcon.svg('<svg>...</svg>'),
-    mute:           NirmaanPlayerIcon.svg('<svg>...</svg>'),
-    volume:         NirmaanPlayerIcon.svg('<svg>...</svg>'),
-    fullscreen:     NirmaanPlayerIcon.svg('<svg>...</svg>'),
-    exitFullscreen: NirmaanPlayerIcon.svg('<svg>...</svg>'),
-  ),
-)
-```
-
-### Custom CSS / JS injection
-
-```dart
-NirmaanYoutubeHtmlConfig(
-  // ... other params ...
-  customCss: '''
-    #brandPill { display: none; }
-    #progressBar { background: #FF6B6B; }
-  ''',
-  customJs: '''
-    console.log('Player ready');
-  ''',
-)
-```
-
----
-
-## API reference
-
-| Export | Description |
+| API | Purpose |
 |---|---|
-| `NirmaanYoutubePlayer.initialize()` | One-call setup — call once in `main()` before `runApp()` |
-| `NirmaanYoutubePlayer.downloadService` | Returns the `NirmaanDownloadService` singleton |
-| `buildPlatformYoutubePlayer(...)` | Main widget builder — picks the right implementation per platform |
-| `NirmaanYoutubeController` | `ValueNotifier`-based controller for play / pause / seek / speed |
-| `NirmaanYoutubeValue` | Immutable state snapshot (`isPlaying`, `position`, `duration`, …) |
-| `NirmaanYoutubeHtmlConfig` | Full config for the HTML player (brand, colours, visibility flags, …) |
-| `buildNirmaanYoutubeHtml(config)` | Builds the complete player HTML string (advanced use) |
-| `NirmaanYoutubeBridgeType` | `inAppWebView` (IO) · `webPostMessage` (Web) |
-| `NirmaanYoutubeFullscreenType` | `nativeFlutter` (IO) · `browser` (Web) |
-| `NirmaanYoutubeFitMode` | `contain` (default) · `cover` |
-| `NirmaanPlayerIcons` | Full swappable icon set for both online and offline players |
-| `NirmaanPlayerIcon.svg(svgString)` | Icon from inline SVG markup |
-| `NirmaanPlayerIcon.image(url)` | Icon from image URL |
-| `NirmaanDownloadService` | GetxService — download / cancel / delete / list offline videos |
-| `YoutubeDownloadService` | Typedef alias for `NirmaanDownloadService` (backward compat) |
-| `OfflineLecture` | Plain-Dart model persisted in GetStorage |
-| `extractYoutubeVideoId(url)` | Extracts the 11-char video ID from any YouTube URL format |
-
----
-
-## Platform support matrix
-
-| Feature | Android | iOS | macOS | Windows | Web |
-|---|:---:|:---:|:---:|:---:|:---:|
-| Online YouTube playback | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Offline MP4 download | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Offline MP4 playback | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Fullscreen (native) | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Double-tap seek | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Keyboard shortcuts | — | — | ✅ | ✅ | ✅ |
-
----
-
-## Migration from `custom_library/`
-
-Replace all scattered imports with a single package import:
-
-```dart
-// BEFORE
-import 'package:yourapp/custom_library/youtube_video_player/youtube_player_platform.dart';
-import 'package:yourapp/screens/student/lecture_player/services/youtube_download_service.dart';
-import 'package:yourapp/screens/student/lecture_player/models/offline_lectures.dart';
-import 'package:yourapp/custom_library/youtube_video_player/controller/nirmaan_youtube_controller.dart';
-import 'package:yourapp/custom_library/youtube_video_player/parser/youtube_url_parser.dart';
-
-// AFTER — one import covers everything
-import 'package:nirmaan_youtube_player/nirmaan_youtube_player.dart';
-```
-
-`YoutubeDownloadService` is aliased to `NirmaanDownloadService`, so existing
-references like `YoutubeDownloadService.I` continue to compile without changes.
-
-Replace the old manual GetX init:
-```dart
-// BEFORE
-await GetStorage.init();
-Get.put(YoutubeDownloadService());
-
-// AFTER
-await NirmaanYoutubePlayer.initialize();
-```
-
----
-
-## Publishing to GitHub
-
-```bash
-cd nirmaan_youtube_player
-git init
-git add .
-git commit -m "chore: initial package release v1.0.0"
-git remote add origin https://github.com/your-username/nirmaan_youtube_player.git
-git branch -M main
-git push -u origin main
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-Reference in any Flutter app:
-```yaml
-dependencies:
-  nirmaan_youtube_player:
-    git:
-      url: https://github.com/your-username/nirmaan_youtube_player.git
-      ref: v1.0.0
-```
-
----
+| `NirmaanYoutubePlayer.initialize()` | Initialises the package once before `runApp()`. |
+| `NirmaanYoutubePlayer.downloadService` | Accesses the shared download service. |
+| `buildPlatformYoutubePlayer(...)` | Builds the correct player implementation for the current platform. |
+| `NirmaanYoutubeController` | Sends playback commands and exposes `NirmaanYoutubeValue`. |
+| `NirmaanDownloadService` | Starts, tracks, cancels, lists, and removes offline downloads. |
+| `OfflineLecture` | Model for persisted offline-video metadata. |
+| `extractYoutubeVideoId(url)` | Extracts a YouTube video ID from a supported URL format. |
+| `NirmaanPlayerIcons` | Replaces selected offline-player icons. |
+| `NirmaanYoutubeHtmlConfig` | Configures the advanced HTML player builder. |
 
 ## Troubleshooting
 
-### YouTube video is black / won't load (macOS)
-Both entitlement files must have `com.apple.security.network.client: true`.
-The Debug and Release entitlements are separate files — update both.
+### The player is blank on Android
 
-### YouTube video is black / won't load (Android)
-Ensure `<uses-permission android:name="android.permission.INTERNET"/>` is in
-`AndroidManifest.xml` and `minSdkVersion` is 19 or higher.
+Confirm that `INTERNET`, `usesCleartextTraffic`, and `network_security_config.xml` are present. Then run:
 
-### Local server fails / offline player shows a blank screen (iOS / macOS)
-Add `NSAllowsLocalNetworking: true` under `NSAppTransportSecurity` in `Info.plist`.
-This lets the WKWebView load from `http://127.0.0.1`.
+```bash
+flutter clean
+flutter pub get
+flutter run
+```
 
-### Download always fails or returns null
-- Check network permissions for your platform (see platform setup above).
-- Some YouTube videos restrict muxed streams; the package automatically falls back
-  to the best available video-only stream.
-- `youtube_explode_dart` requires a valid internet connection to resolve stream URLs.
+### The player is blank on iOS or macOS
 
-### Windows player shows "Windows player only" text
-This message appears when `Platform.isWindows` is `false`, which should never
-happen in a normal Windows build. If you see it, the `dart.library.io` conditional
-export may not have resolved correctly — clean the build with `flutter clean`.
+Confirm that `NSAllowsLocalNetworking` is included in `Info.plist`. On macOS, also confirm that both client and server network entitlements are enabled.
 
-### WebView2 not found (Windows)
-Instruct the user to install the
-[WebView2 Evergreen Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/).
-Windows 11 includes it by default; older Windows 10 machines may not.
+### Windows shows a WebView2 error
 
----
+Install or update the Microsoft Edge WebView2 Runtime, then restart the application.
+
+### Offline playback does not start
+
+Check that the local file still exists:
+
+```dart
+final path = await NirmaanYoutubePlayer.downloadService.getLocalPath('lesson-42');
+debugPrint(path ?? 'File is not available');
+```
+
+### A download fails
+
+Confirm that the URL is valid, the device has network access, and you are authorised to download the content. Availability may vary according to the source, the video's own restrictions, and the platform.
+
+## Development
+
+```bash
+flutter pub get
+dart format --set-exit-if-changed .
+flutter analyze
+flutter test
+dart pub publish --dry-run
+```
+
+## Issues and contributions
+
+Please report reproducible issues through the [GitHub issue tracker](https://github.com/Hemant88080/nirmaan_youtube_player/issues). Include the Flutter version, target platform, steps to reproduce, expected behaviour, and relevant logs.
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+BSD 3-Clause License. See [LICENSE](LICENSE).

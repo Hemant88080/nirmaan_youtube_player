@@ -46,3 +46,17 @@ app.*.map.json
 
 pubspec.lock
 .claude/
+
+# Flutter / Dart generated files
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.plugin_symlinks/
+
+# Generated desktop / iOS dependencies
+**/Flutter/ephemeral/
+**/Pods/
+**/.cxx/
+**/.gradle/
+**/xcuserdata/

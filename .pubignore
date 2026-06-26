@@ -12,3 +12,14 @@ lib/main.dart
 # Generated/local files
 build/
 pubspec.lock
+
+# Generated files inside the example app
+/example/.dart_tool/
+/example/build/
+/example/android/.cxx/
+/example/ios/Pods/
+/example/ios/Flutter/ephemeral/
+/example/macos/Pods/
+/example/macos/Flutter/ephemeral/
+/example/windows/flutter/ephemeral/
+/example/linux/flutter/ephemeral/
