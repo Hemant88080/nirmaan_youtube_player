@@ -1,6 +1,6 @@
   name: nirmaan_youtube_player
   description: Cross-platform Flutter player for YouTube embeds and authorized offline video playback on Android, iOS, macOS, Windows, and web.
-  version: 1.0.0
+  version: 1.0.1
 
   homepage: https://habilkul.com/
   repository: https://github.com/Hemant88080/nirmaan_youtube_player

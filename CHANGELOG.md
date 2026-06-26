@@ -1,8 +1,7 @@
-# 1.0.0
+# 1.0.1
 
-* Initial public release of `nirmaan_youtube_player`.
-* Added a customizable HTML5 player for YouTube embeds.
-* Added cross-platform support for Android, iOS, macOS, Windows, and web.
-* Added local DRM-free offline video playback through a local HTTP server.
-* Added download-management utilities for user-authorized offline video content.
-* Added fullscreen controls, seek controls, playback speed, mute, progress tracking, and persistent offline metadata.
+- Added a complete runnable example application.
+- Improved README documentation and setup instructions.
+- Added macOS support files for the example app.
+- Cleaned generated Flutter files from the repository.
+- Updated package publishing configuration.
