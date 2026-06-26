@@ -435,7 +435,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Future<void> _checkLocalPath() async {
     final path = await _svc.getLocalPath(widget.video.id);
-    if (mounted && path != _localPath) {   // ← only rebuild when value changes
+    if (mounted && path != _localPath) {
+      // ← only rebuild when value changes
       setState(() => _localPath = path);
     }
   }
@@ -525,9 +526,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: ColoredBox(
-        color: Colors.black,          // black while player loads
+        color: Colors.black, // black while player loads
         child: Stack(
-          fit: StackFit.expand,       // ← KEY FIX: forces player to fill full area
+          fit: StackFit.expand, // ← KEY FIX: forces player to fill full area
           children: [
             buildPlatformYoutubePlayer(
               url: widget.video.youtubeUrl,

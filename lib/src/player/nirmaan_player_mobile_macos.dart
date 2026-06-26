@@ -913,8 +913,7 @@ class _NirmaanYoutubePlayerMobileMac extends StatefulWidget {
 }
 
 class _NirmaanYoutubePlayerMobileMacState
-    extends State<_NirmaanYoutubePlayerMobileMac>
-    with WidgetsBindingObserver {
+    extends State<_NirmaanYoutubePlayerMobileMac> with WidgetsBindingObserver {
   InAppWebViewController? _webController;
   HttpServer? _server;
   String? _playerUrl;
@@ -1113,12 +1112,10 @@ class _NirmaanYoutubePlayerMobileMacState
     // Override hooks: rewind→rewind, forward→forward, play→play, pause→pause,
     // volume→unmuted, mute→muted, fullscreen→enter, exitFullscreen→exit.
     final icRewind = ic.rewind != null ? ic.rewind!.toHtml(dRewind) : dRewind;
-    final icForward = ic.forward != null
-        ? ic.forward!.toHtml(dForward)
-        : dForward;
-    final icPlay = ic.play != null
-        ? _wrapId('icon-play', ic.play!.toHtml(dPlay))
-        : dPlay;
+    final icForward =
+        ic.forward != null ? ic.forward!.toHtml(dForward) : dForward;
+    final icPlay =
+        ic.play != null ? _wrapId('icon-play', ic.play!.toHtml(dPlay)) : dPlay;
     final icPause = ic.pause != null
         ? _wrapId('icon-pause', ic.pause!.toHtml(dPause), hidden: true)
         : dPause;
@@ -1659,8 +1656,7 @@ revealControls(true);
 
   Future<void> _syncFullscreenToHtml() async {
     await _webController?.evaluateJavascript(
-      source:
-          '''
+      source: '''
         if (window.nirmaanSetFullscreen) {
           window.nirmaanSetFullscreen(${_isFullscreen ? 'true' : 'false'});
         }

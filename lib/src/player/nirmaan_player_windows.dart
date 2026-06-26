@@ -1044,12 +1044,10 @@ class _NirmaanYoutubePlayerWindowsState
         '<svg id="icon-fs-exit" width="20" height="20" viewBox="0 0 24 24" fill="white" style="display:none"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
 
     final icRewind = ic.rewind != null ? ic.rewind!.toHtml(dRewind) : dRewind;
-    final icForward = ic.forward != null
-        ? ic.forward!.toHtml(dForward)
-        : dForward;
-    final icPlay = ic.play != null
-        ? _wrapId('icon-play', ic.play!.toHtml(dPlay))
-        : dPlay;
+    final icForward =
+        ic.forward != null ? ic.forward!.toHtml(dForward) : dForward;
+    final icPlay =
+        ic.play != null ? _wrapId('icon-play', ic.play!.toHtml(dPlay)) : dPlay;
     final icPause = ic.pause != null
         ? _wrapId('icon-pause', ic.pause!.toHtml(dPause), hidden: true)
         : dPause;
@@ -1543,8 +1541,7 @@ revealControls(true);
       await FullScreenWindow.setFullScreen(_isNativeFullscreen);
       widget.onFullscreenChanged?.call(_isNativeFullscreen);
       await _webController?.evaluateJavascript(
-        source:
-            '''
+        source: '''
           if (window.nirmaanSetFullscreen) {
             window.nirmaanSetFullscreen(${_isNativeFullscreen ? 'true' : 'false'});
           }

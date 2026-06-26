@@ -99,11 +99,9 @@ class _NirmaanYoutubePlayerWebState extends State<_NirmaanYoutubePlayerWeb> {
         sourceName: 'nirmaan-youtube-web',
         bridgeType: NirmaanYoutubeBridgeType.webPostMessage,
         fullscreenType: NirmaanYoutubeFullscreenType.browser,
-
         brandText: 'Nirmaan Academy',
         courseTitle: '',
         watermarkText: 'Nirmaan Academy',
-
         showTopBar: true,
         showBrand: true,
         showWatermark: false,
@@ -115,11 +113,9 @@ class _NirmaanYoutubePlayerWebState extends State<_NirmaanYoutubePlayerWeb> {
         showMuteButton: true,
         showSpeedButton: true,
         showFullscreenButton: true,
-
         fitMode: NirmaanYoutubeFitMode.contain,
         accentColor: '#6C63FF',
         borderRadius: 16,
-
         customCss: '''
           html, body, #root {
             width: 100%;

@@ -137,9 +137,8 @@ String buildNirmaanYoutubeHtml(NirmaanYoutubeHtmlConfig config) {
   final encodedCourseTitle = jsonEncode(config.courseTitle);
   final encodedWatermarkText = jsonEncode(config.watermarkText);
 
-  final fitMode = config.fitMode == NirmaanYoutubeFitMode.cover
-      ? 'cover'
-      : 'contain';
+  final fitMode =
+      config.fitMode == NirmaanYoutubeFitMode.cover ? 'cover' : 'contain';
 
   final showTopBar = config.showTopBar ? 'true' : 'false';
   final showBrand = config.showBrand ? 'true' : 'false';
@@ -152,26 +151,20 @@ String buildNirmaanYoutubeHtml(NirmaanYoutubeHtmlConfig config) {
   final showMuteButton = config.showMuteButton ? 'true' : 'false';
   final showSpeedButton = config.showSpeedButton ? 'true' : 'false';
   final showFullscreenButton = config.showFullscreenButton ? 'true' : 'false';
-  final showDoubleTapSeekOverlay = config.showDoubleTapSeekOverlay
-      ? 'true'
-      : 'false';
-  final enableKeyboardShortcuts = config.enableKeyboardShortcuts
-      ? 'true'
-      : 'false';
+  final showDoubleTapSeekOverlay =
+      config.showDoubleTapSeekOverlay ? 'true' : 'false';
+  final enableKeyboardShortcuts =
+      config.enableKeyboardShortcuts ? 'true' : 'false';
   final enableDoubleTapSeek = config.enableDoubleTapSeek ? 'true' : 'false';
-  final enableTapToToggleControls = config.enableTapToToggleControls
-      ? 'true'
-      : 'false';
+  final enableTapToToggleControls =
+      config.enableTapToToggleControls ? 'true' : 'false';
 
-  final topLeftSlotHtml = config.topLeftSlotHtml.trim().isEmpty
-      ? ''
-      : config.topLeftSlotHtml;
-  final topRightSlotHtml = config.topRightSlotHtml.trim().isEmpty
-      ? ''
-      : config.topRightSlotHtml;
-  final bottomLeftSlotHtml = config.bottomLeftSlotHtml.trim().isEmpty
-      ? ''
-      : config.bottomLeftSlotHtml;
+  final topLeftSlotHtml =
+      config.topLeftSlotHtml.trim().isEmpty ? '' : config.topLeftSlotHtml;
+  final topRightSlotHtml =
+      config.topRightSlotHtml.trim().isEmpty ? '' : config.topRightSlotHtml;
+  final bottomLeftSlotHtml =
+      config.bottomLeftSlotHtml.trim().isEmpty ? '' : config.bottomLeftSlotHtml;
   final bottomRightSlotHtml = config.bottomRightSlotHtml.trim().isEmpty
       ? ''
       : config.bottomRightSlotHtml;
@@ -201,12 +194,12 @@ String buildNirmaanYoutubeHtml(NirmaanYoutubeHtmlConfig config) {
 
   final receiveCommandJs =
       config.bridgeType == NirmaanYoutubeBridgeType.inAppWebView
-      ? '''
+          ? '''
         window.nirmaanCommand = function(data) {
           handleCommand(data);
         };
       '''
-      : '''
+          : '''
         window.addEventListener('message', function(event) {
           var data = event.data;
 
@@ -224,7 +217,7 @@ String buildNirmaanYoutubeHtml(NirmaanYoutubeHtmlConfig config) {
 
   final fullscreenJs =
       config.fullscreenType == NirmaanYoutubeFullscreenType.nativeFlutter
-      ? '''
+          ? '''
         function requestFullscreenToggle() {
           try {
             if (window.flutter_inappwebview) {
@@ -243,7 +236,7 @@ String buildNirmaanYoutubeHtml(NirmaanYoutubeHtmlConfig config) {
           showControlsTemp();
         };
       '''
-      : '''
+          : '''
         function isBrowserFullscreen() {
           return document.fullscreenElement === root ||
                  document.webkitFullscreenElement === root ||

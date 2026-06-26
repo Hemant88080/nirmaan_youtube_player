@@ -27,27 +27,27 @@ class OfflineLecture {
   });
 
   Map<String, dynamic> toJson() => {
-    'lectureId': lectureId,
-    'courseId': courseId,
-    'title': title,
-    'courseTitle': courseTitle,
-    'thumbnailUrl': thumbnailUrl,
-    'youtubeUrl': youtubeUrl,
-    'localPath': localPath,
-    'duration': duration,
-    'downloadedAt': downloadedAt.toIso8601String(),
-  };
+        'lectureId': lectureId,
+        'courseId': courseId,
+        'title': title,
+        'courseTitle': courseTitle,
+        'thumbnailUrl': thumbnailUrl,
+        'youtubeUrl': youtubeUrl,
+        'localPath': localPath,
+        'duration': duration,
+        'downloadedAt': downloadedAt.toIso8601String(),
+      };
 
   factory OfflineLecture.fromJson(Map<String, dynamic> j) => OfflineLecture(
-    lectureId: (j['lectureId'] as num).toInt(),
-    courseId: (j['courseId'] as num? ?? 0).toInt(),
-    title: j['title'] as String? ?? '',
-    courseTitle: j['courseTitle'] as String? ?? '',
-    thumbnailUrl: j['thumbnailUrl'] as String? ?? '',
-    youtubeUrl: j['youtubeUrl'] as String? ?? '',
-    localPath: j['localPath'] as String? ?? '',
-    duration: j['duration'] as String? ?? '--',
-    downloadedAt:
-        DateTime.tryParse(j['downloadedAt'] as String? ?? '') ?? DateTime.now(),
-  );
+        lectureId: (j['lectureId'] as num).toInt(),
+        courseId: (j['courseId'] as num? ?? 0).toInt(),
+        title: j['title'] as String? ?? '',
+        courseTitle: j['courseTitle'] as String? ?? '',
+        thumbnailUrl: j['thumbnailUrl'] as String? ?? '',
+        youtubeUrl: j['youtubeUrl'] as String? ?? '',
+        localPath: j['localPath'] as String? ?? '',
+        duration: j['duration'] as String? ?? '--',
+        downloadedAt: DateTime.tryParse(j['downloadedAt'] as String? ?? '') ??
+            DateTime.now(),
+      );
 }
