@@ -1,42 +1,42 @@
-name: nirmaan_youtube_player
-description: >
-  A cross-platform YouTube & offline video player for Flutter.
-  Supports Android, iOS, macOS, Windows, and Web.
-  Includes offline download management via youtube_explode_dart + Dio,
-  a local HTTP server for DRM-free offline playback, and a fully
-  customisable HTML5 player with the Nirmaan glassmorphism UI.
-version: 1.0.0
-homepage: https://github.com/your-username/nirmaan_youtube_player
+  name: nirmaan_youtube_player
+  description: Cross-platform Flutter player for YouTube embeds and authorized offline video playback on Android, iOS, macOS, Windows, and web.
+  version: 1.0.0
 
-environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.16.0"
+  homepage: https://habilkul.com/
+  repository: https://github.com/Hemant88080/nirmaan_youtube_player
+  issue_tracker: https://github.com/Hemant88080/nirmaan_youtube_player/issues
 
-dependencies:
-  flutter:
-    sdk: flutter
+  topics:
+    - youtube
+    - video-player
+    - flutter
+    - webview
+    - offline-video
 
-  # State management & local storage
-  get: ^4.6.6
-  get_storage: ^2.1.1
+  environment:
+    sdk: ">=3.0.0 <4.0.0"
+    flutter: ">=3.16.0"
 
-  # WebView (Android, iOS, macOS, Windows)
-  flutter_inappwebview: ^6.1.5
+  platforms:
+    android:
+    ios:
+    macos:
+    web:
+    windows:
 
-  # Windows native fullscreen
-  fullscreen_window: ^1.2.1
+  dependencies:
+    flutter:
+      sdk: flutter
 
-  # Offline download
-  dio: ^5.4.3+1
-  youtube_explode_dart: ^2.2.1
-  path_provider: ^2.1.3
+    get: ^4.6.6
+    get_storage: ^2.1.1
+    flutter_inappwebview: ^6.1.5
+    fullscreen_window: ^1.2.1
+    dio: ^5.4.3+1
+    youtube_explode_dart: ^2.2.1
+    path_provider: ^2.1.3
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^3.0.0
-
-flutter:
-  # No assets — the player UI is built entirely from inline HTML/JS.
-  # If you add custom icon assets served by the local HTTP server,
-  # register them here.
+  dev_dependencies:
+    flutter_test:
+      sdk: flutter
+    flutter_lints: ^3.0.0
