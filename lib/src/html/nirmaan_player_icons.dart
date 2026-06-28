@@ -12,13 +12,13 @@
 /// A single swappable icon. Provide ONE of [svg] or [imageUrl].
 /// If both are null, the player falls back to its built-in default for that slot.
 class NirmaanPlayerIcon {
-  /// Inline SVG markup, e.g. '<svg viewBox="0 0 24 24" fill="currentColor">...</svg>'.
+  /// Inline SVG markup, e.g. `<svg viewBox="0 0 24 24" fill="currentColor">...</svg>`.
   /// Uses `fill="currentColor"` so it inherits the button's text colour.
   final String? svg;
 
   /// Image URL or local-server path, e.g.
   /// 'http://127.0.0.1:PORT/icons/play.png' or 'https://cdn.site/play.svg'.
-  /// When set, an <img> tag is rendered instead of inline SVG.
+  /// When set, an `<img>` tag is rendered instead of inline SVG.
   final String? imageUrl;
 
   const NirmaanPlayerIcon.svg(this.svg) : imageUrl = null;

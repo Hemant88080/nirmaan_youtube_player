@@ -1275,8 +1275,8 @@ document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('selectstart', e => e.preventDefault());
 
 /* ── Load video ─────────────────────────────────────────────────────────────── */
-vid.src = '${videoSrc}';
-if (${autoPlayJs}) {
+vid.src = '$videoSrc';
+if ($autoPlayJs) {
   vid.autoplay = true;
   vid.play().catch(() => {});
 }
