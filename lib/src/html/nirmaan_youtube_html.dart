@@ -82,7 +82,7 @@ class NirmaanYoutubeHtmlConfig {
     required this.bridgeType,
     required this.fullscreenType,
     this.fitMode = NirmaanYoutubeFitMode.contain,
-    this.brandText = 'Nirmaan Academy',
+    this.brandText = '',
     this.courseTitle = '',
     this.watermarkText = '',
     this.topLeftSlotHtml = '',
@@ -90,7 +90,7 @@ class NirmaanYoutubeHtmlConfig {
     this.bottomLeftSlotHtml = '',
     this.bottomRightSlotHtml = '',
     this.showTopBar = true,
-    this.showBrand = true,
+    this.showBrand = false,
     this.showWatermark = false,
     this.showCenterPlayButton = true,
     this.showSeekButtons = true,
@@ -1112,7 +1112,7 @@ String buildNirmaanYoutubeHtml(NirmaanYoutubeHtmlConfig config) {
     function applyConfigVisibility() {
       rewindBtn.innerHTML = ICON_REWIND;
       forwardBtn.innerHTML = ICON_FORWARD;
-      brandText.textContent = BRAND_TEXT || 'Nirmaan Academy';
+      brandText.textContent = BRAND_TEXT;
 
       if (COURSE_TITLE && COURSE_TITLE.trim().length > 0) {
         courseTitle.textContent = COURSE_TITLE;

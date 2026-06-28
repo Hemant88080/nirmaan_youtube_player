@@ -184,7 +184,7 @@
 //         sourceName: 'nirmaan-youtube-windows',
 //         bridgeType: NirmaanYoutubeBridgeType.inAppWebView,
 //         fullscreenType: NirmaanYoutubeFullscreenType.nativeFlutter,
-//         topLeftSlotHtml: 'Nirmaan Academy',
+//         topLeftSlotHtml: '',
 //         topRightSlotHtml: '',
 //         bottomLeftSlotHtml: '',
 //         bottomRightSlotHtml: '',
@@ -274,7 +274,7 @@
 //
 //   <!-- Top bar -->
 //   <div id="top-bar">
-//     <span id="brand">Nirmaan Academy</span>
+//     <span id="brand"></span>
 //     <span id="offline-pill">✓ OFFLINE</span>
 //   </div>
 //
@@ -1005,7 +1005,7 @@ class _NirmaanYoutubePlayerWindowsState
         sourceName: 'nirmaan-youtube-windows',
         bridgeType: NirmaanYoutubeBridgeType.inAppWebView,
         fullscreenType: NirmaanYoutubeFullscreenType.nativeFlutter,
-        topLeftSlotHtml: 'Nirmaan Academy',
+        topLeftSlotHtml: '',
         topRightSlotHtml: '',
         bottomLeftSlotHtml: '',
         bottomRightSlotHtml: '',
@@ -1145,7 +1145,7 @@ video{width:100%;height:100%;object-fit:contain;background:#000;outline:none;poi
 
   <!-- Top bar -->
   <div id="top-bar">
-    <span id="brand">Nirmaan Academy</span>
+    <span id="brand"></span>
     <span id="offline-pill">✓ OFFLINE</span>
   </div>
 
